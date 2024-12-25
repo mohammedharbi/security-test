@@ -1,6 +1,6 @@
-package com.example.security.Config;
+package com.example.blogsystem.Config;
 
-import com.example.security.Service.MyUserDetailsService;
+import com.example.blogsystem.Service.MyUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,8 +36,8 @@ public class ConfigurationSecurity {
                 .authenticationProvider(daoAuthenticationProvider())
                 .authorizeHttpRequests()
                 .requestMatchers("/api/v1/user/register").permitAll()
-                .requestMatchers("/api/v1/todo/add","/api/v1/todo/get","/api/v1/todo/update/", "/api/v1/todo/delete/").hasAuthority("USER")
-                .requestMatchers("/api/v1/user/get-users").hasAuthority("ADMIN")
+                .requestMatchers("/api/v1/blog/**").hasAuthority("USER")
+                .requestMatchers("/api/v1/user/get-all-user-blogs").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .logout().logoutUrl("/api/v1/user/logout")

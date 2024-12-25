@@ -1,10 +1,11 @@
-package com.example.security.Config;
+package com.example.bankmanagementsystem.Config;
 
-import com.example.security.Service.MyUserDetailsService;
+import com.example.bankmanagementsystem.Service.MyUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,9 +19,8 @@ public class ConfigurationSecurity {
 
     private final MyUserDetailsService myUserDetailsService;
 
-
     @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider() {
+    public DaoAuthenticationProvider daoAuthenticationProvider(){
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(myUserDetailsService);
         daoAuthenticationProvider.setPasswordEncoder(new BCryptPasswordEncoder());
@@ -35,16 +35,19 @@ public class ConfigurationSecurity {
                 .and()
                 .authenticationProvider(daoAuthenticationProvider())
                 .authorizeHttpRequests()
-                .requestMatchers("/api/v1/user/register").permitAll()
-                .requestMatchers("/api/v1/todo/add","/api/v1/todo/get","/api/v1/todo/update/", "/api/v1/todo/delete/").hasAuthority("USER")
-                .requestMatchers("/api/v1/user/get-users").hasAuthority("ADMIN")
+                .requestMatchers("/api/v1/customer/add-customer","/api/v1/employee/add-employee").permitAll()
+                .requestMatchers("/api/v1/account/add-account","/api/v1/customer/update-customer", "/api/v1/customer/delete-customer","/api/v1/account/get-all-my-accounts","/api/v1/account/deposit/","/api/v1/account/withdraw/", "/api/v1/account/transfer/my-account/").hasAuthority("CUSTOMER")
+                .requestMatchers("/api/v1/employee/update-employee", "/api/v1/employee/delete-employee", "/api/v1/account/active-account/**").hasAuthority("EMPLOYEE")
+                .requestMatchers("/api/v1/account/block-account/").hasAnyAuthority("EMPLOYEE","ADMIN")
                 .anyRequest().authenticated()
                 .and()
-                .logout().logoutUrl("/api/v1/user/logout")
+                .logout()
+                .logoutUrl("/api/v1/logout")
                 .deleteCookies("JSESSIONID")
                 .invalidateHttpSession(true)
                 .and()
                 .httpBasic();
         return http.build();
+
     }
 }
